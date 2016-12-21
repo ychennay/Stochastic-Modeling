@@ -1,12 +1,12 @@
 numbersamples = 10000
 n = 100
 p = 0.8
-cp = pbinom(c(0:n),n,p)
+quantiles = pbinom(c(0:n),n,p)
 X = array(0, c(numbersamples,1))
 
 for (i in 1:numbersamples){
   u=runif(1)
-  X[i] = sum(cp<u)}
+  X[i] = sum(quantiles<u)}
 
 hist(X,freq=F)
 lines(1:n, dbinom(1:n, n,p), lwd=2)
