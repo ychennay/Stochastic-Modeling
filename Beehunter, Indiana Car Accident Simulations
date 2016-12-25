@@ -1,0 +1,65 @@
+Weibull_CDF <- function(alpha, beta, a){
+  F_a = 1 - exp(-((a/beta)^alpha))
+return(F_a)
+}
+
+Exponential_CDF <- function(lambda, a){
+  F_a = 1 - exp(-lambda * a)
+  return(F_a)}
+
+Exponential_PDF <- function(lambda, a){
+  F_a = lambda * exp(-lambda * a)
+  return (F_a)}
+
+Weibull_PDF <- function(alpha, beta, a){
+  F_a = (alpha / beta) * ((a / beta)^(alpha-1)) * exp(-((a/beta)^alpha))
+  return (F_a)}
+
+Weibull_inverse_PDF <- function(alpha, beta, F_a){
+#a = pweibull(F_a, alpha, beta)
+  a = beta * ((-log(1-F_a))^(1/alpha))
+  return(a)}
+
+Exponential_inverse_PDF <- function (lambda, F_a){
+  a = log(1- F_a) / -lambda
+  return (a)}
+
+
+simulateAccidents<- function(iterations = 5000, distribution = "Exponential", threshold = 24)
+{
+  time_to_accidents = vector()
+for (i in 1:iterations){
+T_n= 0
+n = 0
+times = 0
+while (n < 24){
+U = runif(1)
+if (distribution == "Exponential"){
+G_n = Exponential_inverse_PDF(lambda=1, F_a=U)}
+else if (distribution == "Weibull"){
+G_n = Weibull_inverse_PDF(alpha=2, beta=(2/sqrt(pi)), F_a=U)}
+T_n = T_n + G_n
+n = n + 1
+times = append(times,T_n)
+}
+time_to_accidents = append(time_to_accidents, times[length(times)])}
+
+  hist(time_to_accidents, breaks=50, freq=FALSE, main= 
+       paste(distribution, "Distribution to", threshold, "Accidents", sep = " ", collapse = NULL,))
+  abline(v=mean(time_to_accidents),col="blue")
+}
+par(mfrow=c(2,1))
+simulateAccidents(distribution="Weibull")
+simulateAccidents(distribution="Exponential")
+
+
+#visualize other representations
+graphics.off()
+par(mfrow=c(2,2))
+plot(Weibull_CDF(alpha=2, beta=(2/sqrt(pi)),seq(0,10,.1)), main="Weibull Distribution")
+plot(Exponential_CDF(lambda=1,seq(0,10,.1)), main="Exponential Distribution")
+plot(Exponential_PDF(lambda=1, seq(0,4,.1)), main="Exponential PDF")
+plot(Weibull_PDF(alpha=2, beta=(2/sqrt(pi)), seq(0,4,.1)), main= "Weibull PDF")
+
+plot(Weibull_inverse_PDF(alpha = 2, beta=(2/sqrt(pi)), seq(0,1,.01)))
+plot(Exponential_inverse_PDF(lambda=1, seq(0,1,0.01)))
